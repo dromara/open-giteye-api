@@ -1,0 +1,50 @@
+<html>
+<meta charset="UTF-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<head>
+    <script src="http://gssn.fw121.com/js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.8.0/echarts.min.js"></script>
+</head>
+<body>
+<div id="temEcharts" style="height:400px;width:550px"></div>
+<div id="rhEcharts" style="height:400px;width:550px"></div>
+</body>
+<script>
+    var temEcharts = null;
+    var rhEcharts = null;
+    $(function () {
+        // 基于准备好的dom，初始化echarts实例
+        temEcharts = echarts.init(document.getElementById('temEcharts'), {renderer: 'svg'});
+        rhEcharts = echarts.init(document.getElementById('rhEcharts'), {renderer: 'svg'});
+        showImg(undefined);
+    });
+
+    function showImg(data) {
+       var option = {
+           xAxis: {
+               type: 'category',
+               data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+           },
+           yAxis: {
+               type: 'value'
+           },
+           series: [{
+               data: [820, 932, 901, 934, 1290, 1330, 1320],
+               type: 'line'
+           }]
+       };
+       rhEcharts.setOption(option);
+        // rhEcharts.setOption(data);
+    }
+
+    function returnEchartImg(echartObj) {
+        return echartObj.getDataURL();
+    }
+
+    function snapshotSVG(echartObj) {
+        return echartObj.innerHTML;
+    }
+
+
+</script>
+</html>

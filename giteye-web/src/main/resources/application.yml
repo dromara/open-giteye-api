@@ -1,0 +1,65 @@
+server:
+  port: 8222
+  servlet:
+    session:
+      timeout: 10800m
+      cookie:
+        domain: giteye.net
+
+forest:
+  log-response-content: true
+  variables:
+    giteye:
+      giteeClientId: ${giteye.gitee-client-id}
+      giteeClientSecret: ${giteye.gitee-client-secret}
+      giteeBaseUrl: ${giteye.gitee-base-url}
+    wxmp:
+      wxmpBaseUrl: https://api.weixin.qq.com
+      appId: ${giteye.wxmp-app-id}
+      secret: ${giteye.wxmp-secret}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: [JDBC_URL]
+    username: [Username]
+    password: [Password]
+    druid:
+      max-wait: 30000
+      initial-size: 5
+      max-active: 20
+      min-idle: 10
+      validation-query: select 1
+      remove-abandoned: true
+      remove-abandoned-timeout: 180
+      log-abandoned: true
+  jackson:
+    default-property-inclusion: non_null
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+
+giteye:
+  wxmp-token: [WxmpToken]
+  wxmp-encoding-aes-key: [WxmpEncodingAESKey]
+  wxmp-app-id: [WxmpAppID]
+  wxmp-secret: [WxmpSecret]
+  gitee-base-url: https://gitee.com
+  gitee-auth-url: https://gitee.com/oauth/authorize
+  gitee-callback-url: https://api.giteye.net/notify/gitee
+  gitee-client-id: [GiteeClientID]
+  gitee-client-secret: [GiteeClientSecret]
+  headless-chrome-driver: D:\chromedriver\87.0.4280.88\chromedriver.exe
+  chart-web-width: 2048
+  chart-web-height: 1536
+
+
+qcloud:
+  secret-id: [SecretID]
+  secret-key: [SecretKey]
+  cos-region-id: [COSRegionID]
+  cos-gitee-bucket: [COSGiteeBucket]
+  cos-base-url: https://chart.giteye.net
+  chart-url: https://giteye.net/private
