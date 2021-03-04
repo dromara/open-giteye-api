@@ -34,6 +34,17 @@ giteye.net 是专为开源作者设计的数据图表服务工具类站点，提
 - [x] [Gitee](https://gitee.com)
 - [ ] [Github](https://github.com)
 
+### 支持图表
+
+- [x] Star趋势图
+- [x] Gitee指数雷达图
+- [x] 贡献者列表
+- [ ] 页面访问量
+- [ ] IP访问量
+- [ ] 地域分布
+- [ ] 新老访客比例
+
+
 
 ### 如何使用
 
