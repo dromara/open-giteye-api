@@ -35,7 +35,7 @@ giteye.net 是专为开源作者设计的数据图表服务工具类站点，提
 - [ ] [Github](https://github.com)
 
 
-### 如何使用 giteye.net ?
+### 如何使用
 
 #### Step 1. 浏览器输入网址 [https://giteye.net](https://giteye.net) 进入首页
 
