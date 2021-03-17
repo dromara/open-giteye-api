@@ -1,5 +1,7 @@
 # giteye.net
 
+![giteye](/asset/img/giteye-logoall-black.svg)
+
 ### 站点地址
 
 https://giteye.net
