@@ -61,6 +61,11 @@ public class GiteeController {
         return ApiResp.success(giteeBizDomain.getFinalGiteeAuthUrl());
     }
 
+    @RequestMapping(value = "/auth_url_direct", method = RequestMethod.GET)
+    public ApiResp<String> getGiteeAuthUrlDirect() {
+        return ApiResp.success(giteeBizDomain.getFinalGiteeAuthUrlWithoutLogin());
+    }
+
     @RequestMapping(value = "/user/me", method = RequestMethod.GET)
     public ApiResp<GiteeUserInfoVO> currentUser() {
         //获取当前有效的access_token
@@ -100,8 +105,9 @@ public class GiteeController {
         return ApiResp.success(resultList);
     }
 
-    @RequestMapping(value = "/chart/{repo}/{metricsType}/{chartType}/{theme}", method = RequestMethod.POST)
-    public ApiResp<String> generateChart(@PathVariable("repo") String repo,
+    @RequestMapping(value = "/chart/{owner}/{repo}/{metricsType}/{chartType}/{theme}", method = RequestMethod.POST)
+    public ApiResp<String> generateChart(@PathVariable("owner") String owner,
+                                         @PathVariable("repo") String repo,
                                          @PathVariable("metricsType") String metricsType,
                                          @PathVariable("chartType") String chartType,
                                          @PathVariable("theme") String theme,
@@ -131,7 +137,7 @@ public class GiteeController {
         }
 
         String uuid = chartRecordBizDomain.generateChartJob(GitSite.GITEE,
-                giteeUserAuthVO.getLogin(),
+                owner,
                 repo,
                 metricsEnum,
                 chartTypeEnum,

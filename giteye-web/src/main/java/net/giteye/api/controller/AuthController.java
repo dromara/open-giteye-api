@@ -6,8 +6,10 @@ import cn.hutool.core.util.URLUtil;
 import net.giteye.api.resp.ApiResp;
 import net.giteye.api.session.SessionUtil;
 import net.giteye.domain.AuthBizDomain;
+import net.giteye.domain.GiteeBizDomain;
 import net.giteye.exception.GeErrorCode;
 import net.giteye.exception.GeException;
+import net.giteye.vo.GiteeUserAuthVO;
 import net.giteye.vo.UserInfoVO;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,9 @@ public class AuthController {
 
     @Resource
     private AuthBizDomain authBizDomain;
+
+    @Resource
+    private GiteeBizDomain giteeBizDomain;
 
     @RequestMapping(value = "/generate_qrcode", method = RequestMethod.GET)
     public ApiResp<String> generateQRCode(@CookieValue(name = "client_id", defaultValue = "0") String clientId,

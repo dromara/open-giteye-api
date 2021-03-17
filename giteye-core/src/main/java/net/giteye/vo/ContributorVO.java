@@ -16,6 +16,13 @@ public class ContributorVO extends BaseVO{
     @JSONField(name = "html_url")
     private String htmlUrl;
 
+    public ContributorVO(String login, String name, String avatarUrl, String htmlUrl) {
+        this.login = login;
+        this.name = name;
+        this.avatarUrl = avatarUrl;
+        this.htmlUrl = htmlUrl;
+    }
+
     public String getLogin() {
         return login;
     }

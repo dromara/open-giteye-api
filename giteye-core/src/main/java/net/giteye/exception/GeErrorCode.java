@@ -16,6 +16,7 @@ public enum GeErrorCode {
 
     WX_CANNOT_GET_USER("0101", "没法获取微信用户异常"),
     WX_USER_STATUS_INVALID("0102", "用户状态为不可用"),
+    WX_TEMPLATE_MSG_SEND_ERROR("0103", "微信公众号模板消息发送异常"),
 
     GITEE_AUTH_CODE_GET_ERROR("0200", "GITEE授权码获得异常"),
     GITEE_NOT_AUTH("0201", "Gitee还未授权"),
@@ -23,6 +24,9 @@ public enum GeErrorCode {
     GITEE_REPO_GET_ERROR("0203", "Gitee用户仓库列表获取异常"),
     GITEE_REPO_METRICS_GET_ERROR("0204", "Gitee用户仓库指数获取异常"),
     GITEE_REPO_CONTRIBUTORS_GET_ERROR("0205", "Gitee仓库贡献者列表获取异常"),
+    GITEE_TOKEN_ERROR("0206", "Gitee的TOKEN异常"),
+    GITEE_REFRESH_TOKEN_ERROR("0208", "Gitee的FRESH TOKEN异常"),
+    GITEE_HTML_CURRENT_STAR_ERROR("0209", "Gitee获取当前Star数异常"),
 
     CHART_RECORD_IS_EXIST("0301", "此类型图表已存在"),
     CHART_STAR_INFO_GET_ERROR("0302", "star数信息获取异常"),
@@ -31,7 +35,7 @@ public enum GeErrorCode {
     CHART_TYPE_ERROR("0305", "不存在的图表类型"),
     CHART_THEME_ERROR("0306", "不存在的图表主题"),
     CHART_METRICS_INFO_GET_ERROR("0307", "项目能力图获取异常"),
-    CHART_METRICS_NOT_RECOMMEND("0308", "项目还未被推荐")
+    CHART_METRICS_NOT_RECOMMEND("0308", "项目还未被推荐"),
     ;
 
     private String code;

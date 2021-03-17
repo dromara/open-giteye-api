@@ -7,6 +7,7 @@ import net.giteye.charts.output.OutputResult;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public abstract class HtmlImageGenerator<T extends HtmlImageGenerator> {
     private Date generateEndTime;
 
 
-    protected Map<String, OutputResult> results = new ConcurrentHashMap<>();
+    protected Map<String, OutputResult> results = new HashMap<>();
 
 
 

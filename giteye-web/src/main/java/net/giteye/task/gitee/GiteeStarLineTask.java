@@ -5,12 +5,13 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.dtflys.forest.http.ForestResponse;
-import net.giteye.client.gitee.GiteeRepoClient;
+import com.google.common.collect.Lists;
+import net.giteye.domain.AuthBizDomain;
+import net.giteye.domain.ChartDataBizDomain;
+import net.giteye.domain.GiteeBizDomain;
+import net.giteye.domain.WxmpBizDomain;
 import net.giteye.enums.ChartMetrics;
 import net.giteye.enums.GitSite;
-import net.giteye.exception.GeErrorCode;
-import net.giteye.exception.GeException;
 import net.giteye.task.AbsChartTask;
 import net.giteye.task.processor.StarLineProcessor;
 import net.giteye.vo.*;
@@ -34,20 +35,35 @@ public class GiteeStarLineTask extends AbsChartTask {
     private static Logger log = LoggerFactory.getLogger(GiteeStarLineTask.class);
 
     @Resource
-    private GiteeRepoClient giteeRepoClient;
+    private GiteeBizDomain giteeBizDomain;
+
+    @Resource
+    private AuthBizDomain authBizDomain;
+
+    @Resource
+    private WxmpBizDomain wxmpBizDomain;
+
+    @Resource
+    private ChartDataBizDomain chartDataBizDomain;
 
     @Override
     protected List<ChartDataVO> process(GiteeUserAuthVO giteeUserAuthVO, ChartDataRecordVO chartDataRecordVO) {
         //获取到Gitee的star数据,并获取最终的chartData数据
         int page = ObjectUtil.isNull(chartDataRecordVO.getLastDataPage()) ? 1 : chartDataRecordVO.getLastDataPage();
-        int pageSize = 50;
+        int pageSize = 100;
         int dataIndex = ObjectUtil.isNull(chartDataRecordVO.getLastDataIndex()) ? 0 : chartDataRecordVO.getLastDataIndex();
         List<StargazerInfoVO> starInfoList;
         List<StargazerInfoVO> subStarInfoList;
         StarLineProcessor starLineProcessor = StarLineProcessor.newInstance();
+        int incrementCnt = 0;
         while (true) {
-            starInfoList = loadRepoStars(chartDataRecordVO, giteeUserAuthVO, page, pageSize);
+            starInfoList = giteeBizDomain.loadRepoStars(giteeUserAuthVO.getAccessToken(),
+                    chartDataRecordVO.getGitUsername(),
+                    chartDataRecordVO.getRepoName(), page, pageSize);
             subStarInfoList = ListUtil.sub(starInfoList, dataIndex, starInfoList.size());
+
+            //新增数增加
+            incrementCnt += subStarInfoList.size();
 
             //表示有新的
             if (CollectionUtil.isEmpty(subStarInfoList)) {
@@ -66,25 +82,29 @@ public class GiteeStarLineTask extends AbsChartTask {
             dataIndex = 0;
             page++;
         }
+
+        //如果打开了微信推送开关，并且模式为增量更新，并且如果新增数大于0，则发送推送
+        if (chartDataRecordVO.getWxNotify() && chartDataRecordVO.getLastDataPage() != null && incrementCnt > 0){
+            UserInfoVO userInfoVO = authBizDomain.getUserInfoById(chartDataRecordVO.getUserId());
+            GiteeUserAuthVO notifyGiteeUserAuth = giteeBizDomain.getGiteeUserAuthFromDB(chartDataRecordVO.getUserId());
+
+            WxmpStarTemplateSendVO wxmpStarTemplateSendVO = new WxmpStarTemplateSendVO();
+            wxmpStarTemplateSendVO.setUserOpenId(userInfoVO.getWxOpenId());
+            wxmpStarTemplateSendVO.setUserName(notifyGiteeUserAuth.getName());
+            wxmpStarTemplateSendVO.setGitSite(GitSite.GITEE.getCode());
+            wxmpStarTemplateSendVO.setGitUserName(chartDataRecordVO.getGitUsername());
+            wxmpStarTemplateSendVO.setRepo(chartDataRecordVO.getRepoName());
+            wxmpStarTemplateSendVO.setTime(new Date());
+            wxmpStarTemplateSendVO.setIncrementStarCnt(incrementCnt);
+            wxmpStarTemplateSendVO.setTotalStarCnt(starLineProcessor.getChartDataList().get(starLineProcessor.getChartDataList().size()-1).getyValue());
+            wxmpBizDomain.sendStarWxmpTemplate(wxmpStarTemplateSendVO);
+        }
+
         //设置page和dataIndex字段
         chartDataRecordVO.setLastDataPage(page);
         chartDataRecordVO.setLastDataIndex(dataIndex);
 
         return starLineProcessor.getChartDataList();
-    }
-
-    private List<StargazerInfoVO> loadRepoStars(ChartDataRecordVO chartDataRecordVO,
-                                                GiteeUserAuthVO giteeUserAuthVO,
-                                                int page, int pageSize) {
-        ForestResponse<List<StargazerInfoVO>> response = giteeRepoClient.getRepoStars(giteeUserAuthVO.getAccessToken(),
-                chartDataRecordVO.getGitUsername(),
-                chartDataRecordVO.getRepoName(),
-                page,
-                pageSize);
-        if (response.isError()) {
-            throw new GeException(GeErrorCode.CHART_STAR_INFO_GET_ERROR);
-        }
-        return response.getResult();
     }
 
     //补帧实现

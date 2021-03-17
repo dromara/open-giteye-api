@@ -63,4 +63,8 @@ public class StarLineProcessor {
     public List<ChartDataVO> getChartDataList() {
         return chartDataVOList;
     }
+
+    public void putChartData(ChartDataVO chartDataVO){
+        this.chartDataVOList.add(chartDataVO);
+    }
 }

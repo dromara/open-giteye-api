@@ -29,7 +29,16 @@ public class TaskMain {
 
     private final ChartDataRecordBizDomain chartDataRecordBizDomain = SpringAware.getBean(ChartDataRecordBizDomain.class);
 
-    private final ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(10,20);
+    private final ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(1,2);
+
+    public void runOne4Increment(Long chartDataRecordId){
+        ChartDataRecordVO chartDataRecordVO = chartDataRecordBizDomain.getChartDataRecord(chartDataRecordId);
+
+        //获得图表任务管理器
+        ChartTaskManager chartTaskManager = ChartTaskManager.loadInstance();
+        ChartTask chartTask = chartTaskManager.getChartTask(chartTaskManager.getTaskStr(chartDataRecordVO));
+        chartTask.generateOneChart(chartDataRecordVO, false);
+    }
 
     public void runAll4Increment() {
         log.info("--------开始增量更新任务--------");
@@ -44,6 +53,15 @@ public class TaskMain {
                 chartTask.generateOneChart(item, false);
             });
         }
+    }
+
+    public void runOne(Long chartDataRecordId){
+        ChartDataRecordVO chartDataRecordVO = chartDataRecordBizDomain.getChartDataRecord(chartDataRecordId);
+
+        //获得图表任务管理器
+        ChartTaskManager chartTaskManager = ChartTaskManager.loadInstance();
+        ChartTask chartTask = chartTaskManager.getChartTask(chartTaskManager.getTaskStr(chartDataRecordVO));
+        chartTask.generateOneChart(chartDataRecordVO, true);
     }
 
     public void runAll() {

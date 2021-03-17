@@ -22,7 +22,7 @@ public class GiteeContributorTask extends AbsChartTask {
 
     @Override
     protected List<ChartDataVO> process(GiteeUserAuthVO giteeUserAuthVO, ChartDataRecordVO chartDataRecordVO) {
-        List<ContributorVO> contributorVOList = giteeBizDomain.getGiteeContributors(giteeUserAuthVO.getAccessToken(), chartDataRecordVO.getGitUsername(), chartDataRecordVO.getRepoName());
+        List<ContributorVO> contributorVOList = giteeBizDomain.getGiteeContributors(chartDataRecordVO.getGitUsername(), chartDataRecordVO.getRepoName());
         List<ChartDataVO> chartDataVOList = new ArrayList<>();
         ChartDataVO chartDataVO;
         for (ContributorVO item : contributorVOList){

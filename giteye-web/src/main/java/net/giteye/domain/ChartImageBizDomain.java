@@ -75,68 +75,76 @@ public class ChartImageBizDomain {
      * @param chartRecord 图表记录
      */
     public ChartImageGenerateResultVO generateChartImage(ChartRecordVO chartRecord) {
-        ChartImageGenerateResultVO imageGenerateResultVO = new ChartImageGenerateResultVO();
-        HtmlImageGenerator generator = null;
-        try {
-            String gitSite = chartRecord.getGitSite();
-            String gitUsername = chartRecord.getGitUsername();
-            String repo = chartRecord.getRepoName();
-            String imgUuid = chartRecord.getImgUuid();
+        int retryCount = 0;
+        do {
+            ChartImageGenerateResultVO imageGenerateResultVO = new ChartImageGenerateResultVO();
+            HtmlImageGenerator generator = null;
+            try {
+                String gitSite = chartRecord.getGitSite();
+                String gitUsername = chartRecord.getGitUsername();
+                String repo = chartRecord.getRepoName();
+                String imgUuid = chartRecord.getImgUuid();
 //        ChartMetrics metrics = ChartMetrics.getEnumByCode(chartRecord.getMetricsType());
-            // 开始生成图片
-            String metrics = chartRecord.getMetricsType();
-            String url = StrUtil.format("{}/{}", qCloudProperty.getChartUrl(), imgUuid);
-            String targetImagePath = StrUtil.format("{}/{}/{}",
-                    gitSite, gitUsername, repo);
-            TargetImage.ImageType imageType = TargetImage.ImageType.PNG;
-            String targetImageName = StrUtil.format("{}.{}", imgUuid, imageType.getExtName());
-            String thumbnailName = StrUtil.format("{}-thumb.{}", imgUuid, imageType.getExtName());
-            generator = HtmlImageGenerator
-                    .headlessChromeDriver(geProperty.getHeadlessChromeDriver())
-                    .url(url)
-                    .windowSize(geProperty.getChartWebWidth(), geProperty.getChartWebHeight())
-                    .saveImage(TargetImage.fileName(targetImageName)
-                            .filePath(targetImagePath)
-                            .byId("private-wrap")
-                            .imageType(imageType)
-                            .output(imageCosOutput))
-                    .saveImage(TargetImage.fileName(thumbnailName)
-                            .filePath(targetImagePath)
-                            .byId("private-thumbnail")
-                            .imageType(imageType)
-                            .output(thumbnailCosOutput))
-                    .headless(true)
-                    .waitTimeout(metrics.equals(ChartMetrics.CONTRIBUTORS.getCode()) ? 10 : 3)
-                    .generate();
+                // 开始生成图片
+                String metrics = chartRecord.getMetricsType();
+                String url = StrUtil.format("{}/{}", qCloudProperty.getChartUrl(), imgUuid);
+                String targetImagePath = StrUtil.format("{}/{}/{}",
+                        gitSite, gitUsername, repo);
+                TargetImage.ImageType imageType = TargetImage.ImageType.PNG;
+                String targetImageName = StrUtil.format("{}.{}", imgUuid, imageType.getExtName());
+                String thumbnailName = StrUtil.format("{}-thumb.{}", imgUuid, imageType.getExtName());
+                generator = HtmlImageGenerator
+                        .headlessChromeDriver(geProperty.getHeadlessChromeDriver())
+                        .url(url)
+                        .windowSize(geProperty.getChartWebWidth(), geProperty.getChartWebHeight())
+                        .saveImage(TargetImage.fileName(targetImageName)
+                                .filePath(targetImagePath)
+                                .byId("private-wrap")
+                                .imageType(imageType)
+                                .output(imageCosOutput))
+                        .saveImage(TargetImage.fileName(thumbnailName)
+                                .filePath(targetImagePath)
+                                .byId("private-thumbnail")
+                                .imageType(imageType)
+                                .output(thumbnailCosOutput))
+                        .headless(true)
+                        .waitTimeout(metrics.equals(ChartMetrics.CONTRIBUTORS.getCode()) ? 20 : 3)
+                        .generate();
 
-            OutputResult result = generator.getResult(imageCosOutput);
-            OutputResult thumbResult = generator.getResult(thumbnailCosOutput);
-            // 清空result
-            imageGenerateResultVO.setSuccess(result.isSuccess());
-            imageGenerateResultVO.setImgUUID(imgUuid);
-            imageGenerateResultVO.setImgType(imageType.getExtName());
-            imageGenerateResultVO.setImgUrl(result.getTargetPath());
-            imageGenerateResultVO.setImgFileName(targetImageName);
-            imageGenerateResultVO.setThumbnailUrl(thumbResult.getTargetPath());
-            imageGenerateResultVO.setTheme(chartRecord.getTheme());
-            imageGenerateResultVO.setGenerateStartTime(generator.getGenerateStartTime());
-            imageGenerateResultVO.setGenerateEndTime(generator.getGenerateEndTime());
-            imageGenerateResultVO.setUploadStartTime(result.getStartTime());
-            imageGenerateResultVO.setUploadEndTime(result.getEndTime());
-            Throwable exception = result.getException();
-            if (exception != null) {
-                imageGenerateResultVO.setMsg(exception.getMessage());
-            } else {
-                imageGenerateResultVO.setMsg("success");
+                OutputResult result = generator.getResult(imageCosOutput);
+                OutputResult thumbResult = generator.getResult(thumbnailCosOutput);
+                // 清空result
+                imageGenerateResultVO.setSuccess(result.isSuccess());
+                imageGenerateResultVO.setImgUUID(imgUuid);
+                imageGenerateResultVO.setImgType(imageType.getExtName());
+                imageGenerateResultVO.setImgUrl(result.getTargetPath());
+                imageGenerateResultVO.setImgFileName(targetImageName);
+                imageGenerateResultVO.setThumbnailUrl(thumbResult.getTargetPath());
+                imageGenerateResultVO.setTheme(chartRecord.getTheme());
+                imageGenerateResultVO.setGenerateStartTime(generator.getGenerateStartTime());
+                imageGenerateResultVO.setGenerateEndTime(generator.getGenerateEndTime());
+                imageGenerateResultVO.setUploadStartTime(result.getStartTime());
+                imageGenerateResultVO.setUploadEndTime(result.getEndTime());
+                Throwable exception = result.getException();
+                if (exception != null) {
+                    imageGenerateResultVO.setMsg(exception.getMessage());
+                } else {
+                    imageGenerateResultVO.setMsg("success");
+                }
+                imageGenerateResultVO.setSuccess(true);
+            } catch (Throwable th) {
+                if (retryCount < 5) {
+                    retryCount++;
+                    logger.warn("\n\t[重试]: " + retryCount + "\n\t[Giteye] 图片生成或上传时遇到[" + th.getMessage() + "], chart: " + chartRecord.getChartName());
+                    continue;
+                } else {
+                    imageGenerateResultVO.setSuccess(false);
+                    imageGenerateResultVO.setMsg(th + "");
+                    logger.error("[Giteye] [" + chartRecord.getChartName() + "] 图片生成或上传发生错误: ", th);
+                }
             }
-            imageGenerateResultVO.setSuccess(true);
-        } catch (Throwable th) {
-            imageGenerateResultVO.setSuccess(false);
-            imageGenerateResultVO.setMsg(th + "");
-            logger.error("[Giteye] 图片生成或上传发生错误: ", th);
-        }
-
-        return imageGenerateResultVO;
+            return imageGenerateResultVO;
+        } while (true);
     }
 
 

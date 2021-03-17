@@ -36,7 +36,8 @@ public interface GiteeRepoClient {
                                                   @DataVariable("repo") String repo);
 
     @Get(
-            url = "/${owner}/${repo}/stargazers?access_token=${accessToken}&page=${page}&per_page=${pageSize}"
+            url = "/${owner}/${repo}/stargazers?access_token=${accessToken}&page=${page}&per_page=${pageSize}",
+            retryCount = 6
     )
     @LogEnabled(logResponseContent = false)
     ForestResponse<List<StargazerInfoVO>> getRepoStars(@DataVariable("accessToken") String accessToken,
@@ -44,12 +45,4 @@ public interface GiteeRepoClient {
                                                       @DataVariable("repo") String repo,
                                                       @DataVariable("page") int page,
                                                       @DataVariable("pageSize") int pageSize);
-
-    @Get(
-            url = "/${owner}/${repo}/collaborators?access_token=${accessToken}"
-    )
-    @LogEnabled(logResponseContent = false)
-    ForestResponse<List<ContributorVO>> getContributors(@DataVariable("accessToken") String accessToken,
-                                                        @DataVariable("owner") String owner,
-                                                        @DataVariable("repo") String repo);
 }

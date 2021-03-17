@@ -19,6 +19,7 @@ import java.util.Date;
  */
 public class WxmpAccessTokenInterceptor implements Interceptor<Object> {
 
+    //缓存的accessToken，虽然这个是单实例，但是服务号只有1个，所以可以定义为实例属性
     private volatile WxmpAccessTokenVO cacheAccessToken;
 
     @Override

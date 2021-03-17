@@ -28,7 +28,8 @@ public class GeInterceptorConfig implements WebMvcConfigurer {
                 "/chart/img/**",
                 "/gitee/chart/data/**",
                 "/gitee/chart/record/**",
-                "/task/**");
+                "/task/**",
+                "/error");
     }
 
     @Override

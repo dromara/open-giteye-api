@@ -3,8 +3,6 @@ server:
   servlet:
     session:
       timeout: 10800m
-      cookie:
-        domain: giteye.net
 
 forest:
   log-response-content: true
@@ -13,17 +11,19 @@ forest:
       giteeClientId: ${giteye.gitee-client-id}
       giteeClientSecret: ${giteye.gitee-client-secret}
       giteeBaseUrl: ${giteye.gitee-base-url}
+      giteeCallbackUrl: ${giteye.gitee-callback-url}
     wxmp:
       wxmpBaseUrl: https://api.weixin.qq.com
       appId: ${giteye.wxmp-app-id}
       secret: ${giteye.wxmp-secret}
+      starTemplateId: ${giteye.star-template-id}
 
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: [JDBC_URL]
-    username: [Username]
-    password: [Password]
+    url: jdbc:mysql://127.0.0.1:3306/giteye_dev?useUnicode=true&characterEncoding=utf-8&connectTimeout=6000&socketTimeout=6000&autoReconnect=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    username: giteye_dev
+    password: [password]
     druid:
       max-wait: 30000
       initial-size: 5
@@ -39,27 +39,44 @@ spring:
     time-zone: GMT+8
   lifecycle:
     timeout-per-shutdown-phase: 30s
-
+  redis:
+    host: [host]
+    port: 6379
+    password: [password]
+    jedis:
+      pool:
+        max-active: 20
+        min-idle: 3
+        max-idle: 10
+    timeout: 5000
+    database: 1
+  session:
+    store-type: redis
 
 giteye:
-  wxmp-token: [WxmpToken]
-  wxmp-encoding-aes-key: [WxmpEncodingAESKey]
-  wxmp-app-id: [WxmpAppID]
-  wxmp-secret: [WxmpSecret]
+  wxmp-token: [wxmp-token]
+  #  wxmp-encoding-aes-key: [wxmp-encoding-aes-key]
+  wxmp-app-id: [wxmp-app-id]
+  wxmp-secret: [wxmp-secret]
   gitee-base-url: https://gitee.com
   gitee-auth-url: https://gitee.com/oauth/authorize
-  gitee-callback-url: https://api.giteye.net/notify/gitee
-  gitee-client-id: [GiteeClientID]
-  gitee-client-secret: [GiteeClientSecret]
-  headless-chrome-driver: D:\chromedriver\87.0.4280.88\chromedriver.exe
+  gitee-callback-url: https://dev.api.giteye.net/notify/gitee
+  gitee-redirect-url: https://dev.giteye.net/my/gitee
+  gitee-client-id: [gitee-client-id]
+  gitee-client-secret: [gitee-client-secret]
+  headless-chrome-driver: /data/headless-chrome/chromedriver
   chart-web-width: 2048
   chart-web-height: 1536
-
+  session-domain: giteye.net
+  default-auth-user-id: 19
+  star-template-id: [star-template-id]
+  cookie-data: [cookie-data]
 
 qcloud:
-  secret-id: [SecretID]
-  secret-key: [SecretKey]
-  cos-region-id: [COSRegionID]
-  cos-gitee-bucket: [COSGiteeBucket]
-  cos-base-url: https://chart.giteye.net
-  chart-url: https://giteye.net/private
+  secret-id: [secret-id]
+  secret-key: [secret-key]
+  cos-region-id: ap-shanghai
+  cos-gitee-bucket: [cos-gitee-bucket]
+  cos-base-url: https://chart-dev.giteye.net
+  chart-url: http://dev.giteye.net/private
+

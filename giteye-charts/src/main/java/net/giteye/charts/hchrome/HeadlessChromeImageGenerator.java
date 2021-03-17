@@ -167,6 +167,9 @@ public class HeadlessChromeImageGenerator extends HtmlImageGenerator<HeadlessChr
                         timeout = 3;
                     }
                     driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
+                    if (timeout > 5) {
+                        Thread.sleep(Math.min(timeout, 5) * 1000);
+                    }
                     // currentHandler = driver.getWindowHandle();
                     setGenerateEndTime(new Date());
                     watch.stop();
@@ -199,13 +202,14 @@ public class HeadlessChromeImageGenerator extends HtmlImageGenerator<HeadlessChr
                         }
                     }
                 } catch (Throwable th) {
+                    getWebDriverPool().closeDriver(driver);
                     if (retryCount < 5) {
                         retryCount++;
-                        logger.warn("[Giteye] 图片生成重试： " + retryCount + ", url: " + path);
-                        getWebDriverPool().closeDriver(driver);
+                        logger.warn("\n\t[重试]: " + retryCount +  "\n\t[Giteye] 图片生成时遇到[" + th.getMessage() + "], url: " + path);
                         continue;
+                    } else {
+                        throw new RuntimeException(th);
                     }
-                    throw th;
                 } finally {
                     getWebDriverPool().closeDriver(driver);
                 }

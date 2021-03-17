@@ -1,5 +1,8 @@
 package net.giteye.configuration;
 
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import net.giteye.springtools.SpringAware;
 import net.giteye.task.ChartTaskScanner;
 import net.giteye.task.TaskInit;
@@ -52,5 +55,12 @@ public class GeAutoConfiguration {
     @Bean
     public static ConfigureRedisAction configureRedisAction() {
         return ConfigureRedisAction.NO_OP;
+    }
+
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
     }
 }

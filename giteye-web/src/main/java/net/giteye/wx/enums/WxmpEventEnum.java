@@ -7,6 +7,7 @@ public enum WxmpEventEnum {
     SCAN("scan", "扫描二维码"),
     CLICK("click", "自定义菜单"),
     VIEW("view", "菜单跳转链接"),
+    TEMPLATE_SEND_JOB_FINISH("templatesendjobfinish", "微信模板发送成功通知"),
     OTHER("other", "其他");
 
     private String code;

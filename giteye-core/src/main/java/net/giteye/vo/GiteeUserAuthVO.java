@@ -14,6 +14,8 @@ public class GiteeUserAuthVO extends BaseVO{
 
     private String email;
 
+    private String code;
+
     private String accessToken;
 
     private Date expiresTime;
@@ -132,5 +134,13 @@ public class GiteeUserAuthVO extends BaseVO{
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

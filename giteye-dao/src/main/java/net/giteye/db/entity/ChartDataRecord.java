@@ -32,6 +32,8 @@ public class ChartDataRecord implements Serializable {
 
     private Boolean supportIncrement;
 
+    private Boolean wxNotify;
+
     private Integer lastDataPage;
 
     private Integer lastDataIndex;
@@ -119,19 +121,11 @@ public class ChartDataRecord implements Serializable {
         this.createTime = createTime;
     }
 
-    @Override
-    public String toString() {
-        return "ChartDataRecord{" +
-        "id=" + id +
-        ", userId=" + userId +
-        ", gitSite=" + gitSite +
-        ", gitUsername=" + gitUsername +
-        ", repoName=" + repoName +
-        ", metricsType=" + metricsType +
-        ", supportIncrement=" + supportIncrement +
-        ", lastDataPage=" + lastDataPage +
-        ", lastDataIndex=" + lastDataIndex +
-        ", createTime=" + createTime +
-        "}";
+    public Boolean getWxNotify() {
+        return wxNotify;
+    }
+
+    public void setWxNotify(Boolean wxNotify) {
+        this.wxNotify = wxNotify;
     }
 }

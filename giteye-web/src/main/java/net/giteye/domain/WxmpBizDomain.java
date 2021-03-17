@@ -16,6 +16,8 @@ import net.giteye.db.service.UserInfoService;
 import net.giteye.exception.GeErrorCode;
 import net.giteye.exception.GeException;
 import net.giteye.vo.WxUserVO;
+import net.giteye.vo.WxmpStarTemplateSendVO;
+import net.giteye.vo.WxmpTemplateSendResultVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -101,6 +103,14 @@ public class WxmpBizDomain {
         if (ObjectUtil.isNotNull(userInfo)) {
             userInfo.setIsSubscribe(UserSubscribeStatusEnum.UNSUBSCRIBE.getCode());
             userInfoService.updateById(userInfo);
+        }
+    }
+
+    public void sendStarWxmpTemplate(WxmpStarTemplateSendVO wxmpStarTemplateSendVO){
+        WxmpAccessTokenVO tokenVO = wxmpClient.getAccessToken();
+        WxmpTemplateSendResultVO resultVO = wxmpClient.sendStarTemplateMsg(tokenVO.getAccessToken(), wxmpStarTemplateSendVO);
+        if (resultVO.getErrcode() != 0){
+            throw new GeException(GeErrorCode.WX_TEMPLATE_MSG_SEND_ERROR);
         }
     }
 

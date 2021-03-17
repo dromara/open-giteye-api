@@ -6,6 +6,8 @@ public class GiteeAuthTokenDTO {
 
     private String redirectUri;
 
+    private String scope;
+
     public String getCode() {
         return code;
     }
@@ -20,5 +22,13 @@ public class GiteeAuthTokenDTO {
 
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

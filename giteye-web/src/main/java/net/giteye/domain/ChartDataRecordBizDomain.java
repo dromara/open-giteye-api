@@ -9,6 +9,7 @@ import net.giteye.db.service.ChartDataRecordService;
 import net.giteye.enums.ChartRecordStatus;
 import net.giteye.vo.ChartDataRecordVO;
 import net.giteye.vo.ChartRecordVO;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,11 @@ public class ChartDataRecordBizDomain {
         if (ObjectUtil.isNull(chartDataRecord)) {
             return null;
         }
+        return BeanUtil.copyProperties(chartDataRecord, ChartDataRecordVO.class);
+    }
+
+    public ChartDataRecordVO getChartDataRecord(Long id) {
+        ChartDataRecord chartDataRecord = chartDataRecordService.getById(id);
         return BeanUtil.copyProperties(chartDataRecord, ChartDataRecordVO.class);
     }
 

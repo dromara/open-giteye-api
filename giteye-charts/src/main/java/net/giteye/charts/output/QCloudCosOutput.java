@@ -27,15 +27,15 @@ public class QCloudCosOutput extends ChartOutput<QCloudCosOutput> {
 
     private final String secretKey;
 
-    private String regionId;
+    private final String regionId;
 
     private String bucket;
 
-    private COSCredentials cred;
+    private final COSCredentials cred;
 
-    private Region region;
+    private final Region region;
 
-    private COSClient cosClient;
+    private final COSClient cosClient;
 
     private String baseUrl;
 
@@ -76,41 +76,45 @@ public class QCloudCosOutput extends ChartOutput<QCloudCosOutput> {
 
     @Override
     public void writeImage(HtmlImageGenerator imageGenerator, byte[] byteArray, String path, String fileName) {
-        StopWatch watch = new StopWatch();
-        watch.start();
-        Date startTime = new Date();
-        PutObjectResult result = null;
-        if (filenameFactory != null) {
-            fileName = filenameFactory.generateFilename(path, fileName);
-        } else {
-            fileName = PathUtil.urlPath(path, fileName);
-        }
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(byteArray.length);
-            metadata.setContentType("image/png");
-            PutObjectRequest request = new PutObjectRequest(bucket, fileName, inputStream, metadata);
-            result = cosClient.putObject(request);
-        } catch (IOException e) {
-            logger.info("[Giteye] QCloud COS 上传失败 -> Request Id: {}, Version Id: {}",
-                    result.getRequestId(), result.getVersionId());
-            OutputResult errorResult = new OutputResult(fileName, false);
-            errorResult.setException(e);
-            errorResult.setStartTime(startTime);
-            errorResult.setEndTime(new Date());
-//            if (imageGenerator != null) {
+        int retryCount = 0;
+        do {
+            StopWatch watch = new StopWatch();
+            watch.start();
+            Date startTime = new Date();
+            PutObjectResult result = null;
+            if (filenameFactory != null) {
+                fileName = filenameFactory.generateFilename(path, fileName);
+            } else {
+                fileName = PathUtil.urlPath(path, fileName);
+            }
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray)) {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(byteArray.length);
+                metadata.setContentType("image/png");
+                PutObjectRequest request = new PutObjectRequest(bucket, fileName, inputStream, metadata);
+                result = cosClient.putObject(request);
+            } catch (Throwable th) {
+                if (retryCount < 5) {
+                    retryCount++;
+                    logger.warn("\n\t[重试]: " + retryCount +  "\n\t[Giteye] 上传COS时遇到[" + th.getMessage() + "], fileName: " + fileName);
+                    continue;
+                }
+                logger.info("[Giteye] QCloud COS 上传失败 -> Request Id: {}, Version Id: {}",
+                        result.getRequestId(), result.getVersionId());
+                OutputResult errorResult = new OutputResult(fileName, false);
+                errorResult.setException(th);
+                errorResult.setStartTime(startTime);
+                errorResult.setEndTime(new Date());
                 imageGenerator.putResult(this, errorResult);
                 if (onComplete != null) {
                     onComplete.onComplete(this, errorResult);
                 }
-//            }
-            return;
-        }
-        watch.stop();
-        Date endTime = new Date();
-//        if (result != null) {
+                return;
+            }
+            watch.stop();
+            Date endTime = new Date();
             logger.info("[Giteye] QCloud COS 上传成功 -> Request Id: {}, Version Id: {}, eTag: {}",
-                result.getRequestId(), result.getVersionId(), result.getETag());
+                    result.getRequestId(), result.getVersionId(), result.getETag());
             logger.info("[Giteye] QCloud COS 上传图片成功, 耗时: {}ms", watch.getLastTaskTimeMillis());
             OutputResult successResult = new OutputResult(fileName, true);
             successResult.setStartTime(startTime);
@@ -121,6 +125,7 @@ public class QCloudCosOutput extends ChartOutput<QCloudCosOutput> {
             if (onComplete != null) {
                 onComplete.onComplete(this, successResult);
             }
-//        }
+            return;
+        } while (true);
     }
 }

@@ -4,6 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import net.giteye.db.entity.ChartData;
 import net.giteye.db.entity.ChartDataRecord;
 import net.giteye.db.service.ChartDataRecordService;
@@ -11,6 +13,7 @@ import net.giteye.db.service.ChartDataService;
 import net.giteye.vo.ChartDataRecordVO;
 import net.giteye.vo.ChartDataVO;
 import net.giteye.vo.ChartRecordVO;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +80,7 @@ public class ChartDataBizDomain {
             record.setGitUsername(chartRecordVO.getGitUsername());
             record.setRepoName(chartRecordVO.getRepoName());
             record.setMetricsType(chartRecordVO.getMetricsType());
+            record.setWxNotify(true);
             record.setCreateTime(new Date());
             chartDataRecordService.save(record);
         }
@@ -102,5 +106,10 @@ public class ChartDataBizDomain {
             return null;
         }
         return BeanUtil.copyProperties(lastChartData, ChartDataVO.class);
+    }
+
+    public ChartDataVO getById(Long id){
+        ChartData chartData = chartDataService.getById(id);
+        return BeanUtil.copyProperties(chartData, ChartDataVO.class);
     }
 }

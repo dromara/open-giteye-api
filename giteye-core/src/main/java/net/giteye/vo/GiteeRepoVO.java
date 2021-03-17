@@ -41,6 +41,12 @@ public class GiteeRepoVO extends BaseVO{
     @JSONField(name = "recommend")
     private boolean recommend;
 
+    @JSONField(name = "public")
+    private boolean open;
+
+    @JSONField(name = "private")
+    private boolean hide;
+
     @JSONField(name = "language")
     private String language;
 
@@ -218,5 +224,21 @@ public class GiteeRepoVO extends BaseVO{
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
+    }
+
+    public boolean isHide() {
+        return hide;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
     }
 }

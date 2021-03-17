@@ -18,6 +18,8 @@ public class ChartDataRecordVO extends BaseVO{
 
     private Boolean supportIncrement;
 
+    private Boolean wxNotify;
+
     private Integer lastDataPage;
 
     private Integer lastDataIndex;
@@ -102,5 +104,13 @@ public class ChartDataRecordVO extends BaseVO{
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Boolean getWxNotify() {
+        return wxNotify;
+    }
+
+    public void setWxNotify(Boolean wxNotify) {
+        this.wxNotify = wxNotify;
     }
 }

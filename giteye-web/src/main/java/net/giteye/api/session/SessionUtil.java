@@ -4,6 +4,8 @@ import cn.hutool.core.util.ObjectUtil;
 import net.giteye.db.entity.UserInfo;
 import net.giteye.exception.GeErrorCode;
 import net.giteye.exception.GeException;
+import net.giteye.property.GeProperty;
+import net.giteye.springtools.SpringAware;
 import net.giteye.vo.GiteeUserAuthVO;
 import net.giteye.vo.GiteeUserInfoVO;
 import net.giteye.vo.UserInfoVO;
@@ -27,6 +29,8 @@ import javax.servlet.http.HttpSession;
 public class SessionUtil {
 
     private static Logger log = LoggerFactory.getLogger(SessionUtil.class);
+
+    private static GeProperty geProperty = SpringAware.getBean(GeProperty.class);
 
     public static UserInfoVO getSessionUser(){
         HttpSession session = getSession();
@@ -52,6 +56,15 @@ public class SessionUtil {
             return giteeUserAuth;
         }catch (Exception e){
             return null;
+        }
+    }
+
+    public static void removeGiteeUserAuth(){
+        try{
+            HttpSession session = getSession();
+            session.removeAttribute("giteeUserAuth");
+        }catch (Exception e){
+            return;
         }
     }
 
@@ -81,7 +94,7 @@ public class SessionUtil {
 
     public static Cookie newCookie(String key, String value, int days) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setDomain("giteye.net");
+        cookie.setDomain(geProperty.getSessionDomain());
         cookie.setMaxAge(days * 24 * 60 * 60);
         cookie.setPath("/");
         return cookie;

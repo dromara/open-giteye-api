@@ -12,6 +12,7 @@ import net.giteye.db.service.ChartRecordService;
 import net.giteye.enums.*;
 import net.giteye.exception.GeErrorCode;
 import net.giteye.exception.GeException;
+import net.giteye.property.GeProperty;
 import net.giteye.task.ChartTask;
 import net.giteye.task.ChartTaskManager;
 import net.giteye.vo.ChartDataRecordVO;
@@ -40,6 +41,9 @@ public class ChartRecordBizDomain {
     @Resource
     private ChartDataBizDomain chartDataBizDomain;
 
+    @Resource
+    private GeProperty geProperty;
+
     private final ThreadPoolExecutor threadPoolExecutor = ThreadUtil.newExecutor(5, 10);
 
     public boolean checkChartRecordIsExist(GitSite gitSite, String owner, String repo, ChartMetrics metricsType, ChartType chartType, ChartTheme theme) {
@@ -61,7 +65,7 @@ public class ChartRecordBizDomain {
     public ChartRecordVO getChartRecordByUUID(String UUID) {
         QueryWrapper<ChartRecord> queryWrapper = new QueryWrapper<>();
         queryWrapper.and(wrapper -> wrapper.eq("img_uuid", UUID));
-        ChartRecord chartRecord = chartRecordService.getOne(queryWrapper);
+        ChartRecord chartRecord = chartRecordService.getOne(queryWrapper,false);
         if (ObjectUtil.isNull(chartRecord)) {
             return null;
         }
@@ -81,7 +85,7 @@ public class ChartRecordBizDomain {
         chartRecord.setGitSite(gitSite.getCode());
         chartRecord.setGitUsername(owner);
         chartRecord.setRepoName(repo);
-        chartRecord.setRepoUrl(StrUtil.format("{}/{}", giteeUserAuthVO.getHtmlUrl(), repo));
+        chartRecord.setRepoUrl(StrUtil.format("{}/{}/{}", geProperty.getGiteeBaseUrl(), owner, repo));
         chartRecord.setMetricsType(metricsType.getCode());
         chartRecord.setChartType(chartType.getCode());
         chartRecord.setTheme(theme.getCode());
@@ -120,8 +124,8 @@ public class ChartRecordBizDomain {
                 .and(wrapper -> wrapper.eq("git_site", chartDataRecordVO.getGitSite()))
                 .and(wrapper -> wrapper.eq("git_username", chartDataRecordVO.getGitUsername()))
                 .and(wrapper -> wrapper.eq("repo_name", chartDataRecordVO.getRepoName()))
-                .and(wrapper -> wrapper.eq("metrics_type", chartDataRecordVO.getMetricsType()))
-                .and(wrapper -> wrapper.notIn("status", ChartRecordStatus.GENERATING.getCode(), ChartRecordStatus.UPDATING.getCode()));
+                .and(wrapper -> wrapper.eq("metrics_type", chartDataRecordVO.getMetricsType()));
+//                .and(wrapper -> wrapper.notIn("status", ChartRecordStatus.GENERATING.getCode(), ChartRecordStatus.UPDATING.getCode()));
 
         List<ChartRecord> list = chartRecordService.list(queryWrapper);
         List<ChartRecordVO> resultList = new ArrayList<>();

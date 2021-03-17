@@ -51,7 +51,7 @@ public class AuthBizDomain {
         QueryWrapper<ClientLogin> queryWrapper = new QueryWrapper<>();
         queryWrapper.and(wrapper -> wrapper.eq("client_id", clientId))
                 .and(wrapper -> wrapper.eq("status", ClientLoginStatusEnum.VALID.getCode())).orderByDesc("id");
-        ClientLogin clientLogin = clientLoginService.getOne(queryWrapper);
+        ClientLogin clientLogin = clientLoginService.getOne(queryWrapper, false);
 
         //如果不存在这个clientLogin记录，则返回null
         if(ObjectUtil.isNull(clientLogin)){
@@ -67,5 +67,9 @@ public class AuthBizDomain {
         clientLoginService.update(setEntity, queryWrapper);
 
         return userInfoVO;
+    }
+
+    public UserInfoVO getUserInfoById(Long id){
+        return BeanUtil.copyProperties(userInfoService.getById(id), UserInfoVO.class);
     }
 }

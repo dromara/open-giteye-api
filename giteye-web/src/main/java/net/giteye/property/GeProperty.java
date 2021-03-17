@@ -37,6 +37,14 @@ public class GeProperty {
 
     private Integer chartWebHeight;
 
+    private String sessionDomain;
+
+    private Long defaultAuthUserId;
+
+    private String starTemplateId;
+
+    private String cookieData;
+
     public String getWxmpToken() {
         return wxmpToken;
     }
@@ -139,5 +147,37 @@ public class GeProperty {
 
     public void setChartWebHeight(Integer chartWebHeight) {
         this.chartWebHeight = chartWebHeight;
+    }
+
+    public String getSessionDomain() {
+        return sessionDomain;
+    }
+
+    public void setSessionDomain(String sessionDomain) {
+        this.sessionDomain = sessionDomain;
+    }
+
+    public String getCookieData() {
+        return cookieData;
+    }
+
+    public void setCookieData(String cookieData) {
+        this.cookieData = cookieData;
+    }
+
+    public Long getDefaultAuthUserId() {
+        return defaultAuthUserId;
+    }
+
+    public void setDefaultAuthUserId(Long defaultAuthUserId) {
+        this.defaultAuthUserId = defaultAuthUserId;
+    }
+
+    public String getStarTemplateId() {
+        return starTemplateId;
+    }
+
+    public void setStarTemplateId(String starTemplateId) {
+        this.starTemplateId = starTemplateId;
     }
 }

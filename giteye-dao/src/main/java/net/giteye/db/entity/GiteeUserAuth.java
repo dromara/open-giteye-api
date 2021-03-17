@@ -28,6 +28,8 @@ public class GiteeUserAuth implements Serializable {
 
     private String email;
 
+    private String code;
+
     private String accessToken;
 
     private Date expiresTime;
@@ -148,16 +150,11 @@ public class GiteeUserAuth implements Serializable {
         this.createDate = createDate;
     }
 
-    @Override
-    public String toString() {
-        return "GiteeUserAuth{" +
-        "id=" + id +
-        ", userId=" + userId +
-        ", accessToken=" + accessToken +
-        ", expiresTime=" + expiresTime +
-        ", refreshToken=" + refreshToken +
-        ", scope=" + scope +
-        ", updateDate=" + updateDate +
-        "}";
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
